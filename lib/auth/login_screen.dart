@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'forgot_password_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'registration_screen.dart';
+import 'forgot_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -21,23 +22,54 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _handleLogin() {
-    final email = _emailController.text;
-    final password = _passwordController.text;
-
-    if (email.isNotEmpty && password.isNotEmpty) {
+  Future<void> _handleLogin() async {
+    // 1. Check if fields are empty
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Authenticating $email...'),
-          backgroundColor: Colors.green,
-        ),
+        const SnackBar(content: Text('Please fill in all fields'), backgroundColor: Colors.redAccent),
       );
-    } else {
+      return;
+    }
+
+    try {
+      // Show loading indicator
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter both your student email and password.'),
-          backgroundColor: Colors.redAccent,
-        ),
+        const SnackBar(content: Text('Logging in...'), backgroundColor: Colors.blue),
+      );
+
+      // 2. The Firebase Login Command (The Bouncer)
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      // Guard for the async gap
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Login Successful!'), backgroundColor: Colors.green),
+      );
+
+      // 3. TODO: Navigate to the Main Feed!
+      // For now, we will just clear the text fields to show it worked.
+      _emailController.clear();
+      _passwordController.clear();
+
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+      
+      // 4. Handle wrong passwords or missing accounts
+      String errorMessage = 'Login failed';
+      if (e.code == 'user-not-found') {
+        errorMessage = 'No user found for that email.';
+      } else if (e.code == 'wrong-password') {
+        errorMessage = 'Wrong password provided.';
+      } else {
+        errorMessage = e.message ?? 'Login failed';
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage), backgroundColor: Colors.redAccent),
       );
     }
   }
@@ -45,30 +77,20 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // 1. The background is now a soft grey
       backgroundColor: Colors.grey[100], 
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
-            
-            // 2. THIS IS THE NEW CARD UPGRADE
             child: Container(
               padding: const EdgeInsets.all(32.0),
               decoration: BoxDecoration(
-                color: Colors.white, // The card is white
-                borderRadius: BorderRadius.circular(16), // Rounded edges
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05), // Soft drop shadow
-                    blurRadius: 20,
-                    spreadRadius: 5,
-                    offset: const Offset(0, 10),
-                  ),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: const [
+                  BoxShadow(color: Colors.black12, blurRadius: 15, offset: Offset(0, 5)),
                 ],
               ),
-              
-              // 3. Your original UI is safely tucked inside the card
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -78,11 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const Text(
                     'Campus Connect',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blueAccent,
-                    ),
+                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.blueAccent),
                   ),
                   const SizedBox(height: 10),
                   const Text(
@@ -92,6 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 40),
 
+                  // Email Field
                   TextField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
@@ -103,6 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 20),
 
+                  // Password Field
                   TextField(
                     controller: _passwordController,
                     obscureText: _isObscure,
@@ -118,6 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 10),
 
+                  // Forgot Password Link
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
@@ -127,11 +148,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()),
                         );
                       },
-                      child: const Text('Forgot Password?'),
+                      child: const Text('Forgot Password?', style: TextStyle(color: Colors.blueAccent)),
                     ),
                   ),
                   const SizedBox(height: 20),
 
+                  // Login Button
                   ElevatedButton(
                     onPressed: _handleLogin,
                     style: ElevatedButton.styleFrom(
@@ -143,10 +165,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 20),
 
+                  // Register Link
                   Wrap(
-                    alignment: WrapAlignment.center, // Changed from mainAxisAlignment
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  
+                    alignment: WrapAlignment.center,
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       const Text("Don't have an account?"),
                       TextButton(

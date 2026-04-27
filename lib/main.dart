@@ -1,7 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:campus_connect/auth/login_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
+
+void main() async {
+  // This tells Flutter to wait until the engine is ready
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // This turns the key and starts Firebase!
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  
   runApp(const MyApp());
 }
 
