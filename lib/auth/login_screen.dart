@@ -6,6 +6,7 @@ import '../base/app_colors.dart';
 import '../base/app_constants.dart';
 import '../reusable/cc_buttons.dart';
 import '../reusable/cc_text_fields.dart';
+import '../reusable/campus_main_shell.dart';
 import '../utils/validators.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -31,24 +32,28 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _handleLogin() async {
     if (_formKey.currentState?.validate() ?? false) {
       setState(() => _isLoading = true);
-      
+
       try {
         await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
-        
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Login successful!')),
           );
-          // TODO: Navigate to CampusMainShell
+          // ✅ Navigate to CampusMainShell after successful login
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const CampusMainShell()),
+          );
         }
       } on FirebaseAuthException catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(e.message ?? 'Authentication failed'), 
+              content: Text(e.message ?? 'Authentication failed'),
               backgroundColor: Colors.redAccent,
             ),
           );
@@ -120,7 +125,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: CCTextButton(
                     label: 'Forgot Password?',
                     onPressed: () {
-                      // TODO: Implement forgot password
+                      // ✅ Navigate to Forgot Password screen
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()),
+                      );
                     },
                   ),
                 ),
@@ -140,7 +149,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     CCTextButton(
                       label: 'Sign Up',
                       onPressed: () {
-                        // TODO: Navigate to Signup
+                        // ✅ Navigate to Registration screen
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const RegistrationScreen()),
+                        );
                       },
                     ),
                   ],

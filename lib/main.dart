@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'base/app_theme.dart';
 import 'reusable/campus_main_shell.dart';
+import 'auth/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,6 +12,7 @@ void main() async {
   );
   runApp(const CampusConnectApp());
 }
+
 class CampusConnectApp extends StatelessWidget {
   const CampusConnectApp({super.key});
 
@@ -20,7 +22,7 @@ class CampusConnectApp extends StatelessWidget {
       title: 'Campus Connect',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: const CampusMainShell(),
+      home: const LoginScreen(),
     );
   }
 }

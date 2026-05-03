@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class AppColors {
 
   // Primary Brand Colors
-  static const Color primary = Color(0xFF1B2A7A); // Navy Blue
+  static const Color primary = Color(0xFF5EC4F2); // Sky Blue
   static const Color primaryLight = Color(0xFF3F51B5); // Lighter Indigo
   static const Color secondary = Color(0xFF5EC4F2); // Sky Blue
   static const Color accent = Color(0xFFF5E100); // Yellow
@@ -26,7 +26,7 @@ class AppColors {
   static const Color onSurfaceVariant = Color(0xFF475569);
 
   // Status Colors
-  static const Color success = Color(0xFF8BC34A); // NUST Green
+  static const Color success = Color(0xFF8BC34A); // Green
   static const Color successLight = Color(0xFFDCEDC8);
   static const Color warning = Color(0xFFF59E0B);
   static const Color warningLight = Color(0xFFFBBF24);
