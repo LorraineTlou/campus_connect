@@ -3,6 +3,7 @@ import 'package:campus_connect/auth/login_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
+<<<<<<< HEAD
 
 void main() async {
   // This tells Flutter to wait until the engine is ready
@@ -14,15 +15,22 @@ void main() async {
   );
   
   runApp(const MyApp());
+=======
+import 'base/app_theme.dart';
+import 'reusable/campus_main_shell.dart';
+
+void main() {
+  runApp(const CampusConnectApp());
+>>>>>>> ced8d74 (Team 2 UI foundation added(colors,theme,reusable widgets))
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class CampusConnectApp extends StatelessWidget {
+  const CampusConnectApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+<<<<<<< HEAD
       title: 'Flutter Demo',
       theme: ThemeData(
         // This is the theme of your application.
@@ -133,3 +141,12 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+=======
+      title: 'Campus Connect',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      home: const CampusMainShell(),
+    );
+  }
+}
+>>>>>>> ced8d74 (Team 2 UI foundation added(colors,theme,reusable widgets))

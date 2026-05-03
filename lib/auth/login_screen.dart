@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'registration_screen.dart';
 import 'forgot_password_screen.dart';
+import '../base/app_colors.dart';
+import '../base/app_constants.dart';
+import '../reusable/cc_buttons.dart';
+import '../reusable/cc_text_fields.dart';
+import '../utils/validators.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -11,16 +17,17 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  bool _isObscure = true;
 
-  @override
+  final TextEditingController _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _isLoading = false;
+
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
+
 
   Future<void> _handleLogin() async {
     // 1. Check if fields are empty
@@ -71,12 +78,29 @@ class _LoginScreenState extends State<LoginScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(errorMessage), backgroundColor: Colors.redAccent),
       );
+
+  void _handleLogin() async {
+    if (_formKey.currentState?.validate() ?? false) {
+      setState(() => _isLoading = true);
+      
+      // Simulate network delay
+      await Future.delayed(const Duration(seconds: 2));
+      
+      if (mounted) {
+        setState(() => _isLoading = false);
+        // Navigate to home or show success
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Login successful!')),
+        );
+      }
+
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       backgroundColor: Colors.grey[100], 
       body: SafeArea(
         child: Center(
@@ -184,10 +208,99 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ],
               ),
+
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: AppSpacing.screenInsets,
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 60),
+                // Logo or Icon
+                const Center(
+                  child: Icon(
+                    Icons.school_rounded,
+                    size: 80,
+                    color: AppColors.primary,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'Campus Connect',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Sign in to stay connected with your campus',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: 48),
+                
+                CCTextField(
+                  controller: _emailController,
+                  label: 'Email',
+                  hint: 'Enter your university email',
+                  prefixIcon: const Icon(Icons.email_outlined),
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
+                  validator: Validators.email,
+                ),
+                const SizedBox(height: 16),
+                
+                CCPasswordField(
+                  controller: _passwordController,
+                  label: 'Password',
+                  hint: 'Enter your password',
+                  textInputAction: TextInputAction.done,
+                ),
+                
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: CCTextButton(
+                    label: 'Forgot Password?',
+                    onPressed: () {
+                      // TODO: Implement forgot password
+                    },
+                  ),
+                ),
+                const SizedBox(height: 24),
+                
+                CCPrimaryButton(
+                  label: 'Sign In',
+                  onPressed: _handleLogin,
+                  isLoading: _isLoading,
+                ),
+                const SizedBox(height: 24),
+                
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("Don't have an account?"),
+                    CCTextButton(
+                      label: 'Sign Up',
+                      onPressed: () {
+                        // TODO: Navigate to Signup
+                      },
+                    ),
+                  ],
+                ),
+              ],
+
             ),
           ),
         ),
       ),
     );
   }
+
+}
+
 }
