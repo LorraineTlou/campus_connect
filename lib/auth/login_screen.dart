@@ -1,13 +1,10 @@
+import 'package:campus_connect/auth/signup_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'registration_screen.dart';
 import 'forgot_password_screen.dart';
 import '../base/app_colors.dart';
-import '../base/app_constants.dart';
-import '../reusable/cc_buttons.dart';
-import '../reusable/cc_text_fields.dart';
 import '../reusable/campus_main_shell.dart';
-import '../utils/validators.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -20,6 +17,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isObscure = true;
   bool _isLoading = false;
 
   @override
@@ -34,6 +32,9 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() => _isLoading = true);
 
       try {
+        // Tells the OS to save the email and password for next time
+        TextInput.finishAutofillContext(); 
+
         await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
@@ -41,9 +42,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Login successful!')),
+            const SnackBar(content: Text('Login successful!'), backgroundColor: Colors.green),
           );
-          // ✅ Navigate to CampusMainShell after successful login
+          
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const CampusMainShell()),
@@ -67,97 +68,210 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      // 1. A subtle background color to contrast with the white card
+      backgroundColor: Colors.grey[100], 
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: AppSpacing.screenInsets,
-          child: Form(
-            key: _formKey,
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 60),
-                // Logo or Icon
-                const Center(
-                  child: Icon(
-                    Icons.school_rounded,
-                    size: 80,
-                    color: AppColors.primary,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'Campus Connect',
+                const SizedBox(height: 20),
+                
+                // 2. The Typographic Logo (Replacing the Icon)
+                RichText(
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.bold,
+                  text: const TextSpan(
+                    style: TextStyle(
+                      fontSize: 36, 
+                      fontWeight: FontWeight.w900, 
+                      letterSpacing: -1.2, // Tight tracking for a modern logo feel
+                    ),
+                    children: [
+                      TextSpan(
+                        text: 'Campus\n', 
+                        style: TextStyle(color: Colors.black87), // Dark grey/black
+                      ),
+                      TextSpan(
+                        text: 'Connect', 
+                        style: TextStyle(color: AppColors.primary), // Custom light blue
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 12),
+                
+                // Subtitle
                 Text(
-                  'Sign in to stay connected with your campus',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  'Sign in to your university network',
+                  style: TextStyle(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.w500),
                 ),
-                const SizedBox(height: 48),
+                const SizedBox(height: 40),
 
-                CCTextField(
-                  controller: _emailController,
-                  label: 'Email',
-                  hint: 'Enter your university email',
-                  prefixIcon: const Icon(Icons.email_outlined),
-                  keyboardType: TextInputType.emailAddress,
-                  textInputAction: TextInputAction.next,
-                  validator: Validators.email,
-                ),
-                const SizedBox(height: 16),
+                // 3. The Elevated White Form Card
+                Container(
+                  padding: const EdgeInsets.all(28.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(24), // Large, modern border radius
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.04), // Very soft, diffused shadow
+                        blurRadius: 24,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: AutofillGroup(
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // FULL EMAIL FIELD WITH AUTOFILL
+                          TextFormField(
+                            controller: _emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            textInputAction: TextInputAction.next,
+                            autofillHints: const [AutofillHints.email],
+                            decoration: InputDecoration(
+                              labelText: 'Student Email',
+                              // 4. Secure, completely fake dummy placeholder
+                              hintText: 'e.g., n02345678x@students.nust.ac.zw', 
+                              hintStyle: TextStyle(color: Colors.grey[400]),
+                              prefixIcon: const Icon(Icons.email_outlined),
+                              filled: true,
+                              fillColor: Colors.grey[50], // Very slight fill for the input
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(color: Colors.grey[200]!),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(color: Colors.grey[200]!),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Please enter your university email';
+                              }
+                              if (!value.trim().toLowerCase().endsWith('@students.nust.ac.zw')) {
+                                return 'Must be a valid @students.nust.ac.zw email';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 20),
 
-                CCPasswordField(
-                  controller: _passwordController,
-                  label: 'Password',
-                  hint: 'Enter your password',
-                  textInputAction: TextInputAction.done,
-                ),
+                          // PASSWORD FIELD WITH AUTOFILL
+                          TextFormField(
+                            controller: _passwordController,
+                            obscureText: _isObscure,
+                            textInputAction: TextInputAction.done,
+                            autofillHints: const [AutofillHints.password],
+                            decoration: InputDecoration(
+                              labelText: 'Password',
+                              prefixIcon: const Icon(Icons.lock_outline),
+                              filled: true,
+                              fillColor: Colors.grey[50],
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(color: Colors.grey[200]!),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(color: Colors.grey[200]!),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                              ),
+                              suffixIcon: IconButton(
+                                icon: Icon(_isObscure ? Icons.visibility_off : Icons.visibility),
+                                onPressed: () => setState(() => _isObscure = !_isObscure),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your password';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 12),
 
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: CCTextButton(
-                    label: 'Forgot Password?',
-                    onPressed: () {
-                      // ✅ Navigate to Forgot Password screen
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()),
-                      );
-                    },
+                          // FORGOT PASSWORD LINK
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()),
+                                );
+                              },
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              child: const Text('Forgot Password?', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600)),
+                            ),
+                          ),
+                          const SizedBox(height: 28),
+
+                          // SIGN IN BUTTON
+                          ElevatedButton(
+                            onPressed: _isLoading ? null : _handleLogin,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              elevation: 0, 
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), // Matches input borders
+                            ),
+                            child: _isLoading
+                                ? const SizedBox(
+                                    height: 24,
+                                    width: 24,
+                                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                                  )
+                                : const Text('Sign In', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 32),
 
-                CCPrimaryButton(
-                  label: 'Sign In',
-                  onPressed: _handleLogin,
-                  isLoading: _isLoading,
-                ),
-                const SizedBox(height: 24),
-
+                // SIGN UP LINK (Outside the card at the bottom)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Don't have an account?"),
-                    CCTextButton(
-                      label: 'Sign Up',
+                    Text("Don't have an account? ", style: TextStyle(color: Colors.grey[600])),
+                    TextButton(
                       onPressed: () {
-                        // ✅ Navigate to Registration screen
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const RegistrationScreen()),
+                          MaterialPageRoute(builder: (context) => const SignupScreen()),
                         );
                       },
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: const Text('Sign Up', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
                     ),
                   ],
                 ),
+                const SizedBox(height: 20),
               ],
             ),
           ),
