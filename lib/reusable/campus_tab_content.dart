@@ -3,6 +3,8 @@ import '../base/app_colors.dart';
 import '../base/app_constants.dart';
 import '../models/post.dart';
 import 'post_card.dart';
+import '../screens/profile_screen.dart';
+import '../models/user_model.dart';
 
 /// Placeholder bodies per tab; swap for real feature screens later.
 Widget campusTabContent(int index, {Key? key}) {
@@ -16,7 +18,7 @@ Widget campusTabContent(int index, {Key? key}) {
     case 3:
       return _PlaceholderContent(key: key, title: 'Chat', subtitle: 'Messages and announcements.');
     case 4:
-      return _PlaceholderContent(key: key, title: 'Profile', subtitle: 'Account and settings.');
+      return _ProfileTabWrapper(key: key);
     default:
       return _HomeFeed(key: key);
   }
@@ -25,49 +27,54 @@ Widget campusTabContent(int index, {Key? key}) {
 class _HomeFeed extends StatelessWidget {
   const _HomeFeed({super.key});
 
-  static final List<Post> _mockPosts = [
-    Post(
-      id: '1',
-      authorName: 'Lorraine Tlou',
-      authorRole: 'CS Student',
-      authorAvatarUrl: 'https://i.pravatar.cc/150?u=lorraine',
-      content: 'Just finished the final project for Mobile Dev! Campus Connect is looking great. 🚀',
-      timestamp: DateTime.now().subtract(const Duration(minutes: 15)),
-      likes: 24,
-      comments: 5,
-    ),
-    Post(
-      id: '2',
-      authorName: 'John Doe',
-      authorRole: 'Applied Science',
-      authorAvatarUrl: 'https://i.pravatar.cc/150?u=john',
-      content: 'Anyone wanting to form a study group for the Physics exam? Meet at the library at 4 PM.',
-      timestamp: DateTime.now().subtract(const Duration(hours: 2)),
-      likes: 12,
-      comments: 8,
-    ),
-    Post(
-      id: '3',
-      authorName: 'Sarah Smith',
-      authorRole: 'Engineering',
-      authorAvatarUrl: 'https://i.pravatar.cc/150?u=sarah',
-      content: 'The new cafeteria menu is actually pretty good today! Highly recommend the pasta.',
-      timestamp: DateTime.now().subtract(const Duration(hours: 5)),
-      likes: 45,
-      comments: 12,
-      imageUrl: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format',
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
       key: const ValueKey('home-feed'),
       padding: AppSpacing.screenInsets.copyWith(top: 16, bottom: 80),
-      itemCount: _mockPosts.length,
+      itemCount: Post.mockPosts.length,
       separatorBuilder: (context, index) => const SizedBox(height: 16),
       itemBuilder: (context, index) {
-        return PostCard(post: _mockPosts[index]);
+        final post = Post.mockPosts[index];
+        return PostCard(
+          post: post,
+          onAuthorTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => ProfileScreen(
+                  user: UserModel(
+                    uid: 'mock_${post.authorName}',
+                    name: post.authorName,
+                    username: post.authorName.toLowerCase().replaceAll(' ', ''),
+                    email: 'mock@example.com',
+                    avatarUrl: post.authorAvatarUrl,
+                    faculty: post.authorRole,
+                    createdAt: DateTime.now(),
+                    postIds: Post.mockPosts.where((p) => p.authorName == post.authorName).map((p) => p.id).toList(),
+                    followerIds: ['user1', 'user2', 'user3'].take((post.authorName.length % 3) + 1).toList(),
+                    followingIds: ['user4', 'user5'].take((post.authorName.length % 2) + 1).toList(),
+                  ),
+                  currentUserId: 'mock_current_user',
+                  isOwner: false,
+                  onPostTap: (postId) {
+                    final p = Post.mockPosts.firstWhere((p) => p.id == postId);
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => Scaffold(
+                          appBar: AppBar(title: const Text('Post')),
+                          body: ListView(
+                            padding: const EdgeInsets.only(top: 16),
+                            children: [PostCard(post: p)],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            );
+          },
+        );
       },
     );
   }
@@ -108,6 +115,64 @@ class _PlaceholderContent extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _ProfileTabWrapper extends StatefulWidget {
+  const _ProfileTabWrapper({super.key});
+
+  @override
+  State<_ProfileTabWrapper> createState() => _ProfileTabWrapperState();
+}
+
+class _ProfileTabWrapperState extends State<_ProfileTabWrapper> {
+  late UserModel _currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentUser = UserModel(
+      uid: 'mock_current_user',
+      name: 'Lorraine Tlou',
+      username: 'lorrainet',
+      email: 'lorraine@campus.edu',
+      bio: 'CS Student passionate about mobile development and UI design.',
+      avatarUrl: 'https://i.pravatar.cc/150?u=lorraine',
+      faculty: 'Computer Science',
+      year: '3',
+      postIds: ['1'],
+      followerIds: ['user1', 'user2', 'user3', 'user4', 'user5'],
+      followingIds: ['user2', 'user4'],
+      createdAt: DateTime.now(),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ProfileScreen(
+      user: _currentUser,
+      currentUserId: _currentUser.uid,
+      isOwner: true,
+      onPostTap: (postId) {
+        final p = Post.mockPosts.firstWhere((p) => p.id == postId);
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => Scaffold(
+              appBar: AppBar(title: const Text('Post')),
+              body: ListView(
+                padding: const EdgeInsets.only(top: 16),
+                children: [PostCard(post: p)],
+              ),
+            ),
+          ),
+        );
+      },
+      onBioSaved: (updatedUser) async {
+        setState(() {
+          _currentUser = updatedUser;
+        });
+      },
     );
   }
 }
