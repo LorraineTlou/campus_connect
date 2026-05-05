@@ -10,6 +10,7 @@ class PostCard extends StatelessWidget {
   final VoidCallback? onLike;
   final VoidCallback? onComment;
   final VoidCallback? onShare;
+  final VoidCallback? onAuthorTap;
 
   const PostCard({
     super.key,
@@ -17,6 +18,7 @@ class PostCard extends StatelessWidget {
     this.onLike,
     this.onComment,
     this.onShare,
+    this.onAuthorTap,
   });
 
   String _timeAgo(DateTime dateTime) {
@@ -38,27 +40,37 @@ class PostCard extends StatelessWidget {
             padding: AppSpacing.cardInsets,
             child: Row(
               children: [
-                CCAvatar(
-                  imageUrl: post.authorAvatarUrl,
-                  initials: post.authorName.contains(' ') 
-                      ? post.authorName.split(' ').map((e) => e[0]).take(2).join()
-                      : post.authorName.substring(0, 1),
-                  size: 40,
-                ),
-                const SizedBox(width: 12),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        post.authorName,
-                        style: AppTextStyles.labelLg.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        '${post.authorRole} • ${_timeAgo(post.timestamp)}',
-                        style: AppTextStyles.labelSm,
-                      ),
-                    ],
+                  child: GestureDetector(
+                    onTap: onAuthorTap,
+                    behavior: HitTestBehavior.opaque,
+                    child: Row(
+                      children: [
+                        CCAvatar(
+                          imageUrl: post.authorAvatarUrl,
+                          initials: post.authorName.contains(' ') 
+                              ? post.authorName.split(' ').map((e) => e[0]).take(2).join()
+                              : post.authorName.substring(0, 1),
+                          size: 40,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                post.authorName,
+                                style: AppTextStyles.labelLg.copyWith(fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                '${post.authorRole} • ${_timeAgo(post.timestamp)}',
+                                style: AppTextStyles.labelSm,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 IconButton(
