@@ -3,6 +3,7 @@ import '../models/user_model.dart';
 import '../widgets/profile_post_grid.dart';
 import '../widgets/edit_bio_sheet.dart';
 import '../widgets/stat_chip.dart';
+import 'message_screen.dart';
 
 /// ProfileScreen
 ///
@@ -323,7 +324,11 @@ class _ProfileScreenState extends State<ProfileScreen>
         const SizedBox(width: 10),
         OutlinedButton(
           onPressed: () {
-            // TODO: open DM screen
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => MessageScreen(recipient: _user),
+              ),
+            );
           },
           style: OutlinedButton.styleFrom(
             foregroundColor: _primary,
