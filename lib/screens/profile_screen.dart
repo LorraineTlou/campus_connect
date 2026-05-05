@@ -233,7 +233,7 @@ class _ProfileScreenState extends State<ProfileScreen>
       children: [
         CircleAvatar(
           radius: 44,
-          backgroundColor: _accent.withOpacity(0.15),
+          backgroundColor: _accent.withValues(alpha: 0.15),
           backgroundImage: _user.avatarUrl.isNotEmpty
               ? NetworkImage(_user.avatarUrl)
               : null,

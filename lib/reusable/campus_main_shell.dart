@@ -7,10 +7,7 @@ import 'create_post_bottom_sheet.dart';
 /// App shell: [Scaffold] + [BottomNavigationBar] for primary navigation.
 /// Replace [campusTabContent] bodies with real feature screens as they are built.
 class CampusMainShell extends StatefulWidget {
-  const CampusMainShell({
-    super.key,
-    this.title = 'Campus Connect',
-  });
+  const CampusMainShell({super.key, this.title = 'Campus Connect'});
 
   final String title;
 
@@ -23,10 +20,26 @@ class _CampusMainShellState extends State<CampusMainShell> {
 
   static const _items = <_NavItem>[
     _NavItem(icon: Icons.home_outlined, activeIcon: Icons.home, label: 'Home'),
-    _NavItem(icon: Icons.people_outline, activeIcon: Icons.people, label: 'Connect'),
-    _NavItem(icon: Icons.event_outlined, activeIcon: Icons.event, label: 'Events'),
-    _NavItem(icon: Icons.chat_bubble_outline, activeIcon: Icons.chat_bubble, label: 'Chat'),
-    _NavItem(icon: Icons.person_outline, activeIcon: Icons.person, label: 'Profile'),
+    _NavItem(
+      icon: Icons.people_outline,
+      activeIcon: Icons.people,
+      label: 'Connect',
+    ),
+    _NavItem(
+      icon: Icons.event_outlined,
+      activeIcon: Icons.event,
+      label: 'Events',
+    ),
+    _NavItem(
+      icon: Icons.chat_bubble_outline,
+      activeIcon: Icons.chat_bubble,
+      label: 'Chat',
+    ),
+    _NavItem(
+      icon: Icons.person_outline,
+      activeIcon: Icons.person,
+      label: 'Profile',
+    ),
   ];
 
   void _showCreatePost() {
@@ -44,15 +57,14 @@ class _CampusMainShellState extends State<CampusMainShell> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          _index == 0 ? widget.title : _items[_index].label,
-        ),
+        title: Text(_index == 0 ? widget.title : _items[_index].label),
         backgroundColor: colorScheme.surface,
         foregroundColor: colorScheme.onSurface,
       ),
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 200),
-        child: campusTabContent(_index, key: ValueKey<int>(_index)),
+        // ↓ context is now passed in so campusTabContent can read Provider
+        child: campusTabContent(context, _index, key: ValueKey<int>(_index)),
       ),
       floatingActionButton: _index == 0
           ? FloatingActionButton(

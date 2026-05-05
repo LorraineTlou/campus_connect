@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../base/app_colors.dart';
 import '../base/app_constants.dart';
+import '../models/user_model.dart';
 import '../reusable/cc_buttons.dart';
 import '../reusable/cc_text_fields.dart';
 import '../utils/validators.dart';
-import '../reusable/campus_main_shell.dart'; // Re-added this import!
+import '../reusable/campus_main_shell.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -19,7 +21,8 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   bool _isLoading = false;
 
   @override
@@ -33,7 +36,6 @@ class _SignupScreenState extends State<SignupScreen> {
 
   Future<void> _handleSignUp() async {
     if (_formKey.currentState?.validate() ?? false) {
-      
       // 1. Pre-Firebase Domain Check (Keep the Walled Garden intact)
       String email = _emailController.text.trim().toLowerCase();
       if (!email.endsWith('@students.nust.ac.zw')) {
@@ -61,10 +63,11 @@ class _SignupScreenState extends State<SignupScreen> {
 
       try {
         // 3. Create the user in Firebase Auth
-        UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: email,
-          password: _passwordController.text.trim(),
-        );
+        UserCredential userCredential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+              email: email,
+              password: _passwordController.text.trim(),
+            );
 
         User? user = userCredential.user;
 
@@ -72,16 +75,32 @@ class _SignupScreenState extends State<SignupScreen> {
           // Add their full name to their Firebase profile
           await user.updateDisplayName(_nameController.text.trim());
 
-          // Note: Email Verification and Sign-Out removed for testing!
+          // Write the user document to Firestore so ProfileScreen can load it
+          final newUser = UserModel(
+            uid: user.uid,
+            name: _nameController.text.trim(),
+            username: _nameController.text.trim().toLowerCase().replaceAll(
+              RegExp(r'\s+'),
+              '',
+            ),
+            email: email,
+            createdAt: DateTime.now(),
+          );
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .set(newUser.toMap());
 
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Account created successfully! Welcome to Campus Connect.'),
+                content: Text(
+                  'Account created successfully! Welcome to Campus Connect.',
+                ),
                 backgroundColor: AppColors.primary,
               ),
             );
-            
+
             // Navigate directly into the app main feed
             Navigator.pushReplacement(
               context,
@@ -147,7 +166,9 @@ class _SignupScreenState extends State<SignupScreen> {
                   hint: 'Enter your full name',
                   prefixIcon: const Icon(Icons.person_outline),
                   textInputAction: TextInputAction.next,
-                  validator: (value) => value != null && value.isEmpty ? 'Please enter your name' : null,
+                  validator: (value) => value != null && value.isEmpty
+                      ? 'Please enter your name'
+                      : null,
                 ),
                 const SizedBox(height: 16),
 
@@ -195,7 +216,9 @@ class _SignupScreenState extends State<SignupScreen> {
                   children: [
                     const Text("Already have an account? "),
                     TextButton(
-                      onPressed: () => Navigator.pop(context), // Pops back to the Login screen
+                      onPressed: () => Navigator.pop(
+                        context,
+                      ), // Pops back to the Login screen
                       child: const Text(
                         'Sign In',
                         style: TextStyle(
