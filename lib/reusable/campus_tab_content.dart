@@ -1,24 +1,106 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../base/app_colors.dart';
 import '../base/app_constants.dart';
 import '../models/post.dart';
+import '../providers/user_provider.dart';
+import '../screens/profile_screen.dart';
 import 'post_card.dart';
 
 /// Placeholder bodies per tab; swap for real feature screens later.
-Widget campusTabContent(int index, {Key? key}) {
+Widget campusTabContent(BuildContext context, int index, {Key? key}) {
   switch (index) {
     case 0:
       return _HomeFeed(key: key);
     case 1:
-      return _PlaceholderContent(key: key, title: 'Connect', subtitle: 'Clubs, groups, and people.');
+      return _PlaceholderContent(
+        key: key,
+        title: 'Connect',
+        subtitle: 'Clubs, groups, and people.',
+      );
     case 2:
-      return _PlaceholderContent(key: key, title: 'Events', subtitle: 'Campus events and calendar.');
+      return _PlaceholderContent(
+        key: key,
+        title: 'Events',
+        subtitle: 'Campus events and calendar.',
+      );
     case 3:
-      return _PlaceholderContent(key: key, title: 'Chat', subtitle: 'Messages and announcements.');
+      return _PlaceholderContent(
+        key: key,
+        title: 'Chat',
+        subtitle: 'Messages and announcements.',
+      );
     case 4:
-      return _PlaceholderContent(key: key, title: 'Profile', subtitle: 'Account and settings.');
+      return _ProfileTab(key: key);
     default:
       return _HomeFeed(key: key);
+  }
+}
+
+/// Stateless wrapper that reads UserProvider and builds ProfileScreen.
+class _ProfileTab extends StatefulWidget {
+  const _ProfileTab({super.key});
+
+  @override
+  State<_ProfileTab> createState() => _ProfileTabState();
+}
+
+class _ProfileTabState extends State<_ProfileTab> {
+  @override
+  void initState() {
+    super.initState();
+    // Load user data when the profile tab is first shown
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<UserProvider>().loadUser();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final userProvider = context.watch<UserProvider>();
+
+    if (userProvider.loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (userProvider.error != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 48, color: Colors.red),
+            const SizedBox(height: 12),
+            Text(
+              'Failed to load profile',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: () => context.read<UserProvider>().loadUser(),
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final currentUser = userProvider.user;
+
+    if (currentUser == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    return ProfileScreen(
+      user: currentUser,
+      currentUserId: currentUser.uid,
+      isOwner: true,
+      onBioSaved: (updated) async {
+        await context.read<UserProvider>().updateUser(updated);
+      },
+      onPostTap: (postId) {
+        // TODO: navigate to post detail screen
+      },
+    );
   }
 }
 
@@ -31,7 +113,8 @@ class _HomeFeed extends StatelessWidget {
       authorName: 'Lorraine Tlou',
       authorRole: 'CS Student',
       authorAvatarUrl: 'https://i.pravatar.cc/150?u=lorraine',
-      content: 'Just finished the final project for Mobile Dev! Campus Connect is looking great. 🚀',
+      content:
+          'Just finished the final project for Mobile Dev! Campus Connect is looking great. 🚀',
       timestamp: DateTime.now().subtract(const Duration(minutes: 15)),
       likes: 24,
       comments: 5,
@@ -41,7 +124,8 @@ class _HomeFeed extends StatelessWidget {
       authorName: 'John Doe',
       authorRole: 'Applied Science',
       authorAvatarUrl: 'https://i.pravatar.cc/150?u=john',
-      content: 'Anyone wanting to form a study group for the Physics exam? Meet at the library at 4 PM.',
+      content:
+          'Anyone wanting to form a study group for the Physics exam? Meet at the library at 4 PM.',
       timestamp: DateTime.now().subtract(const Duration(hours: 2)),
       likes: 12,
       comments: 8,
@@ -51,11 +135,13 @@ class _HomeFeed extends StatelessWidget {
       authorName: 'Sarah Smith',
       authorRole: 'Engineering',
       authorAvatarUrl: 'https://i.pravatar.cc/150?u=sarah',
-      content: 'The new cafeteria menu is actually pretty good today! Highly recommend the pasta.',
+      content:
+          'The new cafeteria menu is actually pretty good today! Highly recommend the pasta.',
       timestamp: DateTime.now().subtract(const Duration(hours: 5)),
       likes: 45,
       comments: 12,
-      imageUrl: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format',
+      imageUrl:
+          'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format',
     ),
   ];
 

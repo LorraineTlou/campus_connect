@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../models/post.dart';
 
 /// Displays a 3-column grid of post thumbnails.
 ///
@@ -64,27 +65,51 @@ class _PostTile extends StatelessWidget {
   final String postId;
   const _PostTile({required this.postId});
 
-  // Deterministic placeholder colours (replace with real thumbnails later)
-  static const List<Color> _palette = [
-    Color(0xFFBBDEFB),
-    Color(0xFFE3F2FD),
-    Color(0xFF90CAF9),
-    Color(0xFF64B5F6),
-    Color(0xFF42A5F5),
-  ];
-
-  Color _colorFor(String id) => _palette[id.hashCode.abs() % _palette.length];
-
   @override
   Widget build(BuildContext context) {
+    // Find the post from mock data
+    final post = Post.mockPosts.firstWhere(
+      (p) => p.id == postId,
+      orElse: () => Post(
+        id: '',
+        authorName: '',
+        authorRole: '',
+        authorAvatarUrl: '',
+        content: 'Unknown post',
+        timestamp: DateTime.now(),
+      ),
+    );
+
+    if (post.id.isEmpty) {
+      return Container(color: Colors.grey[300]);
+    }
+
+    if (post.imageUrl != null && post.imageUrl!.isNotEmpty) {
+      return Image.network(
+        post.imageUrl!,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => Container(
+          color: Colors.grey[300],
+          child: const Icon(Icons.broken_image_outlined, color: Colors.grey),
+        ),
+      );
+    }
+
+    // For text-only posts, show a snippet on a subtle background
     return Container(
-      // TODO: swap with CachedNetworkImage / PostThumbnail once Team 3 is ready
-      color: _colorFor(postId),
+      color: Colors.blue[50],
+      padding: const EdgeInsets.all(8.0),
       child: Center(
-        child: Icon(
-          Icons.image_outlined,
-          color: Colors.white.withOpacity(0.6),
-          size: 28,
+        child: Text(
+          post.content,
+          style: const TextStyle(
+            fontSize: 13,
+            color: Colors.black87,
+            fontWeight: FontWeight.w500,
+          ),
+          textAlign: TextAlign.center,
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
     );
