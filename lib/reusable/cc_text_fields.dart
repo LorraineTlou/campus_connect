@@ -95,15 +95,15 @@ class CCTextField extends StatelessWidget {
         hintText: hint,
         prefixIcon: prefixIcon != null
             ? IconTheme(
-          data: const IconThemeData(color: AppColors.textHint, size: 20),
-          child: prefixIcon!,
-        )
+                data: const IconThemeData(color: AppColors.textHint, size: 20),
+                child: prefixIcon!,
+              )
             : null,
         suffixIcon: suffixIcon != null
             ? IconTheme(
-          data: const IconThemeData(color: AppColors.textHint, size: 20),
-          child: suffixIcon!,
-        )
+                data: const IconThemeData(color: AppColors.textHint, size: 20),
+                child: suffixIcon!,
+              )
             : null,
         errorText: errorText,
         helperText: helperText,
@@ -221,12 +221,20 @@ class CCSearchBar extends StatelessWidget {
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: AppTextStyles.bodyMd.copyWith(color: AppColors.textHint),
-          prefixIcon: const Icon(Icons.search, color: AppColors.textHint, size: 20),
+          prefixIcon: const Icon(
+            Icons.search,
+            color: AppColors.textHint,
+            size: 20,
+          ),
           suffixIcon: onClear != null
               ? IconButton(
-            onPressed: onClear,
-            icon: const Icon(Icons.close, color: AppColors.textHint, size: 18),
-          )
+                  onPressed: onClear,
+                  icon: const Icon(
+                    Icons.close,
+                    color: AppColors.textHint,
+                    size: 18,
+                  ),
+                )
               : null,
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
@@ -265,7 +273,7 @@ class CCDropdownField<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<T>(
-      value: value,
+      initialValue: value,
       items: items,
       onChanged: onChanged,
       style: AppTextStyles.bodyMd.copyWith(color: AppColors.textPrimary),
@@ -276,9 +284,9 @@ class CCDropdownField<T> extends StatelessWidget {
         hintText: hint,
         prefixIcon: prefixIcon != null
             ? IconTheme(
-          data: const IconThemeData(color: AppColors.textHint, size: 20),
-          child: prefixIcon!,
-        )
+                data: const IconThemeData(color: AppColors.textHint, size: 20),
+                child: prefixIcon!,
+              )
             : null,
         errorText: errorText,
         errorStyle: AppTextStyles.caption.copyWith(color: AppColors.error),
