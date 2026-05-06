@@ -145,9 +145,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         if (widget.isOwner)
           IconButton(
             icon: const Icon(Icons.settings_outlined, color: _textDark),
-            onPressed: () {
-              // TODO: navigate to Settings screen
-            },
+            onPressed: () {},
           ),
       ],
     );
@@ -253,9 +251,7 @@ class _ProfileScreenState extends State<ProfileScreen>
             bottom: 0,
             right: 0,
             child: GestureDetector(
-              onTap: () {
-                // TODO: pick image from gallery / camera
-              },
+              onTap: () {},
               child: Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(

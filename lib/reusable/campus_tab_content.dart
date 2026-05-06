@@ -97,9 +97,7 @@ class _ProfileTabState extends State<_ProfileTab> {
       onBioSaved: (updated) async {
         await context.read<UserProvider>().updateUser(updated);
       },
-      onPostTap: (postId) {
-        // TODO: navigate to post detail screen
-      },
+      onPostTap: (postId) {},
     );
   }
 }
