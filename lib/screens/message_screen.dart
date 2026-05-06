@@ -43,7 +43,11 @@ class _MessageScreenState extends State<MessageScreen> {
         elevation: 1,
         titleSpacing: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textPrimary, size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: AppColors.textPrimary,
+            size: 20,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: Row(
@@ -53,18 +57,26 @@ class _MessageScreenState extends State<MessageScreen> {
               backgroundImage: widget.recipient.avatarUrl.isNotEmpty
                   ? NetworkImage(widget.recipient.avatarUrl)
                   : null,
-              backgroundColor: AppColors.primary.withOpacity(0.2),
+              backgroundColor: AppColors.primary.withValues(alpha: 0.2),
               child: widget.recipient.avatarUrl.isEmpty
                   ? Text(
-                      widget.recipient.name.isNotEmpty ? widget.recipient.name[0].toUpperCase() : '?',
-                      style: const TextStyle(fontSize: 14, color: AppColors.primary, fontWeight: FontWeight.bold),
+                      widget.recipient.name.isNotEmpty
+                          ? widget.recipient.name[0].toUpperCase()
+                          : '?',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
                     )
                   : null,
             ),
             const SizedBox(width: 12),
             Text(
               widget.recipient.name,
-              style: AppTextStyles.labelLg.copyWith(color: AppColors.textPrimary),
+              style: AppTextStyles.labelLg.copyWith(
+                color: AppColors.textPrimary,
+              ),
             ),
           ],
         ),
@@ -78,12 +90,17 @@ class _MessageScreenState extends State<MessageScreen> {
               itemCount: _messages.length,
               itemBuilder: (context, index) {
                 // Alternate sides for dummy messages: index 0 (latest) is me, index 1 is them, etc.
-                final isMe = index % 2 == 0; 
+                final isMe = index % 2 == 0;
                 return Align(
-                  alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+                  alignment: isMe
+                      ? Alignment.centerRight
+                      : Alignment.centerLeft,
                   child: Container(
                     margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
                     constraints: BoxConstraints(
                       maxWidth: MediaQuery.of(context).size.width * 0.75,
                     ),
@@ -97,9 +114,7 @@ class _MessageScreenState extends State<MessageScreen> {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 5,
-                          offset: const Offset(0, 2),
+                          color: Colors.black.withValues(alpha: (0.05)),
                         ),
                       ],
                     ),
@@ -121,7 +136,7 @@ class _MessageScreenState extends State<MessageScreen> {
               color: AppColors.surface,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, -2),
                 ),
@@ -138,7 +153,10 @@ class _MessageScreenState extends State<MessageScreen> {
                         hintStyle: const TextStyle(color: AppColors.textHint),
                         filled: true,
                         fillColor: AppColors.inputFill,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(24),
                           borderSide: BorderSide.none,
@@ -156,7 +174,11 @@ class _MessageScreenState extends State<MessageScreen> {
                         color: AppColors.primary,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.send, color: Colors.white, size: 20),
+                      child: const Icon(
+                        Icons.send,
+                        color: Colors.white,
+                        size: 20,
+                      ),
                     ),
                   ),
                 ],

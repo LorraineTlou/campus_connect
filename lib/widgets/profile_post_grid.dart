@@ -5,11 +5,7 @@ import '../providers/post_provider.dart';
 
 /// Displays a 3-column grid of post thumbnails.
 ///
-/// [postIds] comes from [UserModel.postIds] or [UserModel.likedPostIds].
-/// [onPostTap] is wired to Team 3's feed so tapping opens the PostDetailScreen.
-///
-/// NOTE: Replace [_placeholderColor] and the placeholder Container with
-/// real post thumbnail widgets once Team 3's PostModel is available.
+
 class ProfilePostGrid extends StatelessWidget {
   final List<String> postIds;
   final void Function(String postId)? onPostTap;
@@ -72,12 +68,10 @@ class _PostTile extends StatelessWidget {
     // Find the post from PostProvider
     final posts = context.read<PostProvider>().posts;
     final post = posts.firstWhere(
-      (p) => p.id == postId,
+          (p) => p.id == postId,
       orElse: () => Post(
         id: '',
         authorName: '',
-        authorRole: '',
-        authorAvatarUrl: '',
         content: 'Unknown post',
         timestamp: DateTime.now(),
       ),
@@ -98,7 +92,6 @@ class _PostTile extends StatelessWidget {
       );
     }
 
-    // For text-only posts, show a snippet on a subtle background
     return Container(
       color: Colors.blue[50],
       padding: const EdgeInsets.all(8.0),

@@ -36,7 +36,6 @@ class _ProfileTabState extends State<_ProfileTab> {
   @override
   void initState() {
     super.initState();
-    // Load user data when the profile tab is first shown
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<UserProvider>().loadUser();
     });
@@ -112,7 +111,7 @@ class _CreatePostTabState extends State<_CreatePostTab> {
     if (_contentController.text.trim().isEmpty) return;
 
     setState(() => _isPosting = true);
-    
+
     try {
       final user = context.read<UserProvider>().user;
       context.read<PostProvider>().addPost(
@@ -121,7 +120,7 @@ class _CreatePostTabState extends State<_CreatePostTab> {
         authorRole: 'Student',
         avatarUrl: user?.avatarUrl ?? '',
       );
-      
+
       if (mounted) {
         setState(() => _isPosting = false);
         _contentController.clear();
@@ -182,7 +181,6 @@ class _CreatePostTabState extends State<_CreatePostTab> {
             label: 'Post to Feed',
             onPressed: _handlePost,
             isLoading: _isPosting,
-
           ),
         ],
       ),
