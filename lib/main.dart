@@ -5,6 +5,7 @@ import 'firebase_options.dart';
 import 'base/app_theme.dart';
 import 'auth/login_screen.dart';
 import 'providers/user_provider.dart';
+import 'providers/post_provider.dart';
 
 void main() async {
   // Wait for Flutter engine to be ready
@@ -14,8 +15,11 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => UserProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => PostProvider()),
+      ],
       child: const CampusConnectApp(),
     ),
   );

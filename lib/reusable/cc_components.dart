@@ -45,8 +45,8 @@ class CCCard extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: radius,
-        splashColor: AppColors.primary.withOpacity(0.06),
-        highlightColor: AppColors.primary.withOpacity(0.03),
+        splashColor: AppColors.primary.withValues(alpha: 0.1),
+        highlightColor: AppColors.primary.withValues(alpha: 0.03),
         child: Container(
           padding: padding ?? AppSpacing.cardInsets,
           decoration: BoxDecoration(
@@ -82,12 +82,12 @@ class CCBadge extends StatelessWidget {
 
   Color get _bg {
     return switch (variant) {
-      CCBadgeVariant.primary => AppColors.primary.withOpacity(0.15),
-      CCBadgeVariant.success => AppColors.success.withOpacity(0.15),
-      CCBadgeVariant.warning => AppColors.warning.withOpacity(0.15),
-      CCBadgeVariant.error   => AppColors.error.withOpacity(0.15),
-      CCBadgeVariant.info    => AppColors.info.withOpacity(0.15),
-      CCBadgeVariant.neutral => AppColors.textHint.withOpacity(0.15),
+      CCBadgeVariant.primary => AppColors.primary.withValues(alpha: 0.15),
+      CCBadgeVariant.success => AppColors.success.withValues(alpha: 0.15),
+      CCBadgeVariant.warning => AppColors.warning.withValues(alpha: 0.15),
+      CCBadgeVariant.error => AppColors.error.withValues(alpha: 0.15),
+      CCBadgeVariant.info => AppColors.info.withValues(alpha: 0.15),
+      CCBadgeVariant.neutral => AppColors.textHint.withValues(alpha: 0.15),
     };
   }
 
@@ -96,8 +96,8 @@ class CCBadge extends StatelessWidget {
       CCBadgeVariant.primary => AppColors.primaryLight,
       CCBadgeVariant.success => AppColors.successLight,
       CCBadgeVariant.warning => AppColors.warning,
-      CCBadgeVariant.error   => AppColors.error,
-      CCBadgeVariant.info    => AppColors.info,
+      CCBadgeVariant.error => AppColors.error,
+      CCBadgeVariant.info => AppColors.info,
       CCBadgeVariant.neutral => AppColors.textSecondary,
     };
   }
@@ -106,10 +106,7 @@ class CCBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: _bg,
-        borderRadius: AppRadius.badge,
-      ),
+      decoration: BoxDecoration(color: _bg, borderRadius: AppRadius.badge),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -160,26 +157,26 @@ class CCAvatar extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: backgroundColor.withOpacity(0.2),
-        border: Border.all(color: backgroundColor.withOpacity(0.4), width: 1),
+        color: backgroundColor.withValues(alpha: 0.2),
+        border: Border.all(
+          color: backgroundColor.withValues(alpha: 0.4),
+          width: 1,
+        ),
         image: imageUrl != null
-            ? DecorationImage(
-          image: NetworkImage(imageUrl!),
-          fit: BoxFit.cover,
-        )
+            ? DecorationImage(image: NetworkImage(imageUrl!), fit: BoxFit.cover)
             : null,
       ),
       alignment: Alignment.center,
       child: imageUrl == null
           ? Text(
-        _getInitials(),
-        style: TextStyle(
-          fontSize: size * 0.35,
-          fontWeight: FontWeight.w600,
-          color: backgroundColor,
-          height: 1,
-        ),
-      )
+              _getInitials(),
+              style: TextStyle(
+                fontSize: size * 0.35,
+                fontWeight: FontWeight.w600,
+                color: backgroundColor,
+                height: 1,
+              ),
+            )
           : null,
     );
   }
@@ -228,7 +225,9 @@ class CCSectionHeader extends StatelessWidget {
               onTap: action,
               child: Text(
                 actionLabel!,
-                style: AppTextStyles.labelMd.copyWith(color: AppColors.primaryLight),
+                style: AppTextStyles.labelMd.copyWith(
+                  color: AppColors.primaryLight,
+                ),
               ),
             ),
         ],
@@ -259,15 +258,16 @@ class CCDivider extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: verticalPadding),
       child: Row(
         children: [
-          const Expanded(child: Divider(color: AppColors.divider, thickness: 0.5)),
+          const Expanded(
+            child: Divider(color: AppColors.divider, thickness: 0.5),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Text(
-              label!,
-              style: AppTextStyles.caption,
-            ),
+            child: Text(label!, style: AppTextStyles.caption),
           ),
-          const Expanded(child: Divider(color: AppColors.divider, thickness: 0.5)),
+          const Expanded(
+            child: Divider(color: AppColors.divider, thickness: 0.5),
+          ),
         ],
       ),
     );
@@ -305,7 +305,7 @@ class CCEmptyState extends StatelessWidget {
               width: 72,
               height: 72,
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.08),
+                color: AppColors.primary.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, size: 32, color: AppColors.primaryLight),
@@ -316,7 +316,9 @@ class CCEmptyState extends StatelessWidget {
               const SizedBox(height: AppSpacing.sm),
               Text(
                 subtitle!,
-                style: AppTextStyles.bodyMd.copyWith(color: AppColors.textSecondary),
+                style: AppTextStyles.bodyMd.copyWith(
+                  color: AppColors.textSecondary,
+                ),
                 textAlign: TextAlign.center,
               ),
             ],

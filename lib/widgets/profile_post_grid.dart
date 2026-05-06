@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../models/post.dart';
 
+import 'package:provider/provider.dart';
+import '../providers/post_provider.dart';
+
 /// Displays a 3-column grid of post thumbnails.
 ///
 /// [postIds] comes from [UserModel.postIds] or [UserModel.likedPostIds].
@@ -67,14 +70,12 @@ class _PostTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Find the post from mock data
-    final post = Post.mockPosts.firstWhere(
+    final posts = context.read<PostProvider>().posts;
+    final post = posts.firstWhere(
       (p) => p.id == postId,
       orElse: () => Post(
         id: '',
         authorName: '',
-        authorRole: '',
-        authorAvatarUrl: '',
         content: 'Unknown post',
         timestamp: DateTime.now(),
       ),
@@ -95,7 +96,6 @@ class _PostTile extends StatelessWidget {
       );
     }
 
-    // For text-only posts, show a snippet on a subtle background
     return Container(
       color: Colors.blue[50],
       padding: const EdgeInsets.all(8.0),

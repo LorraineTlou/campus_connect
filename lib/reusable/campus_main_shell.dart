@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-
+import '../screens/create_post_screen.dart';
 import '../base/app_colors.dart';
 import 'campus_tab_content.dart';
-import 'create_post_bottom_sheet.dart';
 
 /// App shell: [Scaffold] + [BottomNavigationBar] for primary navigation.
 /// Replace [campusTabContent] bodies with real feature screens as they are built.
@@ -43,11 +42,12 @@ class _CampusMainShellState extends State<CampusMainShell> {
   ];
 
   void _showCreatePost() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => const CreatePostBottomSheet(),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (_) => const CreatePostScreen(),
+      ),
     );
   }
 
