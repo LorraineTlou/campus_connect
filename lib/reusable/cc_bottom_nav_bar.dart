@@ -3,7 +3,6 @@ import '../base/app_colors.dart';
 import '../base/app_text_styles.dart';
 
 /// Campus Connect — Main Bottom Navigation Bar
-/// Team 2: Core Foundation & UI Standards
 ///
 /// Usage in your main Scaffold:
 ///
@@ -41,16 +40,7 @@ class CCBottomNavBar extends StatelessWidget {
       icon: Icons.home_outlined,
       activeIcon: Icons.home_rounded,
     ),
-    _NavItem(
-      label: 'Schedule',
-      icon: Icons.calendar_today_outlined,
-      activeIcon: Icons.calendar_today_rounded,
-    ),
-    _NavItem(
-      label: 'Events',
-      icon: Icons.event_outlined,
-      activeIcon: Icons.event_rounded,
-    ),
+
     _NavItem(
       label: 'Profile',
       icon: Icons.person_outline_rounded,

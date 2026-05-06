@@ -3,8 +3,11 @@ import 'package:provider/provider.dart';
 import '../base/app_colors.dart';
 import '../base/app_constants.dart';
 import '../models/post.dart';
+import '../providers/post_provider.dart';
 import '../providers/user_provider.dart';
 import '../screens/profile_screen.dart';
+import 'cc_buttons.dart';
+import 'cc_text_fields.dart';
 import 'post_card.dart';
 
 /// Placeholder bodies per tab; swap for real feature screens later.
@@ -13,24 +16,8 @@ Widget campusTabContent(BuildContext context, int index, {Key? key}) {
     case 0:
       return _HomeFeed(key: key);
     case 1:
-      return _PlaceholderContent(
-        key: key,
-        title: 'Connect',
-        subtitle: 'Clubs, groups, and people.',
-      );
+      return _CreatePostTab(key: key);
     case 2:
-      return _PlaceholderContent(
-        key: key,
-        title: 'Events',
-        subtitle: 'Campus events and calendar.',
-      );
-    case 3:
-      return _PlaceholderContent(
-        key: key,
-        title: 'Chat',
-        subtitle: 'Messages and announcements.',
-      );
-    case 4:
       return _ProfileTab(key: key);
     default:
       return _HomeFeed(key: key);
@@ -104,56 +91,135 @@ class _ProfileTabState extends State<_ProfileTab> {
   }
 }
 
-class _HomeFeed extends StatelessWidget {
-  const _HomeFeed({super.key});
+class _CreatePostTab extends StatefulWidget {
+  const _CreatePostTab({super.key});
 
-  static final List<Post> _mockPosts = [
-    Post(
-      id: '1',
-      authorName: 'Lorraine Tlou',
-      authorRole: 'CS Student',
-      authorAvatarUrl: 'https://i.pravatar.cc/150?u=lorraine',
-      content:
-          'Just finished the final project for Mobile Dev! Campus Connect is looking great. 🚀',
-      timestamp: DateTime.now().subtract(const Duration(minutes: 15)),
-      likes: 24,
-      comments: 5,
-    ),
-    Post(
-      id: '2',
-      authorName: 'John Doe',
-      authorRole: 'Applied Science',
-      authorAvatarUrl: 'https://i.pravatar.cc/150?u=john',
-      content:
-          'Anyone wanting to form a study group for the Physics exam? Meet at the library at 4 PM.',
-      timestamp: DateTime.now().subtract(const Duration(hours: 2)),
-      likes: 12,
-      comments: 8,
-    ),
-    Post(
-      id: '3',
-      authorName: 'Sarah Smith',
-      authorRole: 'Engineering',
-      authorAvatarUrl: 'https://i.pravatar.cc/150?u=sarah',
-      content:
-          'The new cafeteria menu is actually pretty good today! Highly recommend the pasta.',
-      timestamp: DateTime.now().subtract(const Duration(hours: 5)),
-      likes: 45,
-      comments: 12,
-      imageUrl:
-          'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format',
-    ),
-  ];
+  @override
+  State<_CreatePostTab> createState() => _CreatePostTabState();
+}
+
+class _CreatePostTabState extends State<_CreatePostTab> {
+  final _contentController = TextEditingController();
+  bool _isPosting = false;
+
+  @override
+  void dispose() {
+    _contentController.dispose();
+    super.dispose();
+  }
+
+  void _handlePost() async {
+    if (_contentController.text.trim().isEmpty) return;
+
+    setState(() => _isPosting = true);
+    
+    try {
+      final user = context.read<UserProvider>().user;
+      context.read<PostProvider>().addPost(
+        _contentController.text.trim(),
+        authorName: user?.name ?? 'Anonymous Student',
+        authorRole: 'Student',
+        avatarUrl: user?.avatarUrl ?? '',
+      );
+      
+      if (mounted) {
+        setState(() => _isPosting = false);
+        _contentController.clear();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Post published!')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isPosting = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to post: $e')),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: AppSpacing.screenInsets.copyWith(top: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            "What's happening on campus?",
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: AppColors.primary,
+            ),
+          ),
+          const SizedBox(height: 24),
+          CCTextField(
+            controller: _contentController,
+            hint: "Share your thoughts, updates, or questions...",
+            maxLines: 8,
+            minLines: 5,
+          ),
+          const SizedBox(height: 24),
+          Row(
+            children: [
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.image_outlined, color: AppColors.primary),
+              ),
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.poll_outlined, color: AppColors.primary),
+              ),
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.location_on_outlined, color: AppColors.primary),
+              ),
+            ],
+          ),
+          const SizedBox(height: 32),
+          CCPrimaryButton(
+            label: 'Post to Feed',
+            onPressed: _handlePost,
+            isLoading: _isPosting,
+
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HomeFeed extends StatelessWidget {
+  const _HomeFeed({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final posts = context.watch<PostProvider>().posts;
+
+    if (posts.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.feed_outlined, size: 64, color: Colors.grey[300]),
+            const SizedBox(height: 16),
+            Text(
+              'No posts yet',
+              style: TextStyle(color: Colors.grey[500], fontSize: 16),
+            ),
+          ],
+        ),
+      );
+    }
+
     return ListView.separated(
       key: const ValueKey('home-feed'),
       padding: AppSpacing.screenInsets.copyWith(top: 16, bottom: 80),
-      itemCount: _mockPosts.length,
+      itemCount: posts.length,
       separatorBuilder: (context, index) => const SizedBox(height: 16),
       itemBuilder: (context, index) {
-        return PostCard(post: _mockPosts[index]);
+        return PostCard(post: posts[index]);
       },
     );
   }

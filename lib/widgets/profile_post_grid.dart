@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/post.dart';
+import '../providers/post_provider.dart';
 
 /// Displays a 3-column grid of post thumbnails.
 ///
@@ -67,8 +69,9 @@ class _PostTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Find the post from mock data
-    final post = Post.mockPosts.firstWhere(
+    // Find the post from PostProvider
+    final posts = context.read<PostProvider>().posts;
+    final post = posts.firstWhere(
       (p) => p.id == postId,
       orElse: () => Post(
         id: '',

@@ -19,21 +19,11 @@ class _CampusMainShellState extends State<CampusMainShell> {
   int _index = 0;
 
   static const _items = <_NavItem>[
-    _NavItem(icon: Icons.home_outlined, activeIcon: Icons.home, label: 'Home'),
+    _NavItem(icon: Icons.home_outlined, activeIcon: Icons.home, label: 'Feed'),
     _NavItem(
-      icon: Icons.people_outline,
-      activeIcon: Icons.people,
-      label: 'Connect',
-    ),
-    _NavItem(
-      icon: Icons.event_outlined,
-      activeIcon: Icons.event,
-      label: 'Events',
-    ),
-    _NavItem(
-      icon: Icons.chat_bubble_outline,
-      activeIcon: Icons.chat_bubble,
-      label: 'Chat',
+      icon: Icons.add_box_outlined,
+      activeIcon: Icons.add_box,
+      label: 'Post',
     ),
     _NavItem(
       icon: Icons.person_outline,
@@ -66,14 +56,7 @@ class _CampusMainShellState extends State<CampusMainShell> {
         // ↓ context is now passed in so campusTabContent can read Provider
         child: campusTabContent(context, _index, key: ValueKey<int>(_index)),
       ),
-      floatingActionButton: _index == 0
-          ? FloatingActionButton(
-              onPressed: _showCreatePost,
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-              child: const Icon(Icons.add),
-            )
-          : null,
+
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _index,

@@ -4,51 +4,7 @@ import '../models/post.dart';
 import '../models/comment.dart';
 
 class PostProvider extends ChangeNotifier {
-  final List<Post> _posts = [
-    Post(
-      id: '1',
-      authorName: 'Lorraine Tlou',
-      authorRole: 'CS Student',
-      authorAvatarUrl: 'https://i.pravatar.cc/150?u=lorraine',
-      content:
-          'Just finished the final project for Mobile Dev! Campus Connect is looking great. 🚀',
-      timestamp: DateTime.now().subtract(const Duration(minutes: 15)),
-      likes: 24,
-    ),
-    Post(
-      id: '2',
-      authorName: 'Alice Monroe',
-      authorRole: 'CS Student',
-      content:
-          'Does anyone have the syllabus for CS301? The portal is down again.',
-      timestamp: DateTime.now().subtract(const Duration(hours: 3)),
-      likes: 5,
-      commentList: [
-        Comment(
-          id: 'c1',
-          author: 'Bob',
-          text: "Yeah, I have it. I'll DM it to you!",
-          createdAt: DateTime.now().subtract(const Duration(hours: 2)),
-          replies: [
-            Comment(
-              id: 'r1',
-              author: 'Alice Monroe',
-              text: 'Thanks so much! 🙏',
-              createdAt: DateTime.now().subtract(const Duration(hours: 1)),
-            ),
-          ],
-        ),
-      ],
-    ),
-    Post(
-      id: '3',
-      authorName: 'James Okafor',
-      content:
-          'Free pizza at the student union right now! Come by the main hall. 🍕',
-      timestamp: DateTime.now().subtract(const Duration(hours: 7)),
-      likes: 38,
-    ),
-  ];
+  final List<Post> _posts = [];
 
   List<Post> get posts => List.unmodifiable(_posts);
 
