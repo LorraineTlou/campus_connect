@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "225856265598",
+    "project_id": "campus-connect-nust",
+    "storage_bucket": "campus-connect-nust.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:225856265598:android:07e20fc325ad819f62a72f",
+        "android_client_info": {
+          "package_name": "com.example.campus_connect"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnjd6CYgBfyZo8hZ2X9G2lyfBqpLfCiqc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
