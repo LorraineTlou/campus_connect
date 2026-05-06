@@ -7,7 +7,7 @@ import '../models/user_model.dart';
 import '../reusable/cc_buttons.dart';
 import '../reusable/cc_text_fields.dart';
 import '../utils/validators.dart';
-import '../reusable/campus_main_shell.dart';
+import 'login_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -91,21 +91,90 @@ class _SignupScreenState extends State<SignupScreen> {
               .doc(user.uid)
               .set(newUser.toMap());
 
+          // Sign out so user enters through login flow
+          await FirebaseAuth.instance.signOut();
+
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                  'Account created successfully! Welcome to Campus Connect.',
+            // Show success dialog
+            await showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (ctx) => Dialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
                 ),
-                backgroundColor: AppColors.primary,
+                child: Padding(
+                  padding: const EdgeInsets.all(28),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 72,
+                        height: 72,
+                        decoration: BoxDecoration(
+                          color: AppColors.success.withValues(alpha: 0.12),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.check_circle_rounded,
+                          color: AppColors.success,
+                          size: 48,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        'Account Created!',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      const Text(
+                        'Your account has been created successfully.\nPlease sign in to continue.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF6B7280),
+                          height: 1.5,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () => Navigator.pop(ctx),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            'Go to Login',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             );
 
-            // Navigate directly into the app main feed
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const CampusMainShell()),
-            );
+            // Navigate to Login screen (replace stack)
+            if (mounted) {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginScreen()),
+                (route) => false,
+              );
+            }
           }
         }
       } on FirebaseAuthException catch (e) {

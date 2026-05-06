@@ -12,6 +12,7 @@ class Post {
   bool isLikedByMe;
   List<Comment> commentList; // renamed from 'comments' (was int)
   final String? imageUrl;
+  final String? imagePath; // local file path for images picked from device
 
   Post({
     required this.id,
@@ -25,11 +26,15 @@ class Post {
     List<Comment>? commentList,
     int? comments, // for backward compatibility in constructor
     this.imageUrl,
+    this.imagePath,
   }) : commentList = commentList ?? (comments != null ? List.generate(comments, (_) => Comment(id: '', author: '', text: '', createdAt: DateTime.now())) : []);
 
   // Convenience getter so PostCard can show a count without breaking old code
   int get commentCount => commentList.length;
   int get comments => commentCount; // Added for compatibility with PostCard
+
+  /// True if this post has an attached image (either URL or local path)
+  bool get hasImage => (imageUrl != null && imageUrl!.isNotEmpty) || (imagePath != null && imagePath!.isNotEmpty);
 
   // Derive initials from authorName for Team 4-style avatars
   String get avatarInitials => authorName.trim().isEmpty

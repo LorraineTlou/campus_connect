@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
 import '../base/app_colors.dart';
 import '../base/app_constants.dart';
 import '../models/post.dart';
@@ -100,6 +102,7 @@ class _CreatePostTab extends StatefulWidget {
 class _CreatePostTabState extends State<_CreatePostTab> {
   final _contentController = TextEditingController();
   bool _isPosting = false;
+  String? _pickedImagePath;
 
   @override
   void dispose() {
@@ -107,8 +110,16 @@ class _CreatePostTabState extends State<_CreatePostTab> {
     super.dispose();
   }
 
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+    if (picked != null) {
+      setState(() => _pickedImagePath = picked.path);
+    }
+  }
+
   void _handlePost() async {
-    if (_contentController.text.trim().isEmpty) return;
+    if (_contentController.text.trim().isEmpty && _pickedImagePath == null) return;
 
     setState(() => _isPosting = true);
 
@@ -119,10 +130,14 @@ class _CreatePostTabState extends State<_CreatePostTab> {
         authorName: user?.name ?? 'Anonymous Student',
         authorRole: 'Student',
         avatarUrl: user?.avatarUrl ?? '',
+        imagePath: _pickedImagePath,
       );
 
       if (mounted) {
-        setState(() => _isPosting = false);
+        setState(() {
+          _isPosting = false;
+          _pickedImagePath = null;
+        });
         _contentController.clear();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Post published!')),
@@ -140,6 +155,8 @@ class _CreatePostTabState extends State<_CreatePostTab> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return SingleChildScrollView(
       padding: AppSpacing.screenInsets.copyWith(top: 24),
       child: Column(
@@ -159,12 +176,43 @@ class _CreatePostTabState extends State<_CreatePostTab> {
             maxLines: 8,
             minLines: 5,
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
+
+          // ── Picked Image Preview ──
+          if (_pickedImagePath != null)
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.file(
+                    File(_pickedImagePath!),
+                    width: double.infinity,
+                    height: 200,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: GestureDetector(
+                    onTap: () => setState(() => _pickedImagePath = null),
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
+                      child: const Icon(Icons.close, color: Colors.white, size: 18),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+          const SizedBox(height: 16),
           Row(
             children: [
               IconButton(
-                onPressed: () {},
+                onPressed: _pickImage,
                 icon: const Icon(Icons.image_outlined, color: AppColors.primary),
+                tooltip: 'Add Photo',
               ),
               IconButton(
                 onPressed: () {},
@@ -194,17 +242,23 @@ class _HomeFeed extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final posts = context.watch<PostProvider>().posts;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     if (posts.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.feed_outlined, size: 64, color: Colors.grey[300]),
+            Icon(Icons.feed_outlined, size: 64, color: isDark ? Colors.grey[700] : Colors.grey[300]),
             const SizedBox(height: 16),
             Text(
               'No posts yet',
-              style: TextStyle(color: Colors.grey[500], fontSize: 16),
+              style: TextStyle(color: isDark ? Colors.grey[500] : Colors.grey[500], fontSize: 16),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Be the first to share something!',
+              style: TextStyle(color: isDark ? Colors.grey[600] : Colors.grey[400], fontSize: 13),
             ),
           ],
         ),
@@ -219,45 +273,6 @@ class _HomeFeed extends StatelessWidget {
       itemBuilder: (context, index) {
         return PostCard(post: posts[index]);
       },
-    );
-  }
-}
-
-class _PlaceholderContent extends StatelessWidget {
-  const _PlaceholderContent({
-    super.key,
-    required this.title,
-    required this.subtitle,
-  });
-
-  final String title;
-  final String subtitle;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      key: ValueKey('placeholder-$title'),
-      child: Padding(
-        padding: AppSpacing.screenInsets,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.construction,
-              size: 48,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            const SizedBox(height: AppSpacing.md),
-            Text(title, style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              subtitle,
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.onSurfaceVariant),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

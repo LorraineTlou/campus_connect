@@ -13,6 +13,7 @@ class PostProvider extends ChangeNotifier {
     required String authorName,
     String authorRole = '',
     String avatarUrl = '',
+    String? imagePath,
   }) {
     _posts.insert(
       0,
@@ -23,6 +24,7 @@ class PostProvider extends ChangeNotifier {
         authorAvatarUrl: avatarUrl,
         content: content.trim(),
         timestamp: DateTime.now(),
+        imagePath: imagePath,
       ),
     );
     notifyListeners();

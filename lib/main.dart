@@ -6,6 +6,7 @@ import 'base/app_theme.dart';
 import 'auth/login_screen.dart';
 import 'providers/user_provider.dart';
 import 'providers/post_provider.dart';
+import 'providers/theme_provider.dart';
 
 void main() async {
   // Wait for Flutter engine to be ready
@@ -19,6 +20,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => PostProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ],
       child: const CampusConnectApp(),
     ),
@@ -30,10 +32,14 @@ class CampusConnectApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = context.watch<ThemeProvider>();
+
     return MaterialApp(
       title: 'Campus Connect',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeProvider.themeMode,
       home: const LoginScreen(),
     );
   }

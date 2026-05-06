@@ -2,8 +2,10 @@ import 'package:campus_connect/auth/signup_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 import 'forgot_password_screen.dart';
 import '../base/app_colors.dart';
+import '../providers/theme_provider.dart';
 import '../reusable/campus_main_shell.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -67,9 +69,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      // 1. A subtle background color to contrast with the white card
-      backgroundColor: Colors.grey[100], 
+      backgroundColor: isDark ? const Color(0xFF121212) : Colors.grey[100], 
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -77,7 +79,18 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 20),
+                // Dark mode toggle
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: IconButton(
+                    icon: Icon(
+                      isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                      color: isDark ? Colors.white70 : Colors.grey[600],
+                    ),
+                    onPressed: () => context.read<ThemeProvider>().toggleTheme(),
+                  ),
+                ),
+                const SizedBox(height: 10),
                 
                 // 2. The Typographic Logo (Replacing the Icon)
                 RichText(
@@ -113,11 +126,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 Container(
                   padding: const EdgeInsets.all(28.0),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(24), // Large, modern border radius
+                    color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                    borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.04), // Very soft, diffused shadow
+                        color: isDark ? Colors.black.withValues(alpha: 0.3) : Colors.black.withValues(alpha: 0.04),
                         blurRadius: 24,
                         offset: const Offset(0, 8),
                       ),
@@ -254,7 +267,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Don't have an account? ", style: TextStyle(color: Colors.grey[600])),
+                    Text("Don't have an account? ", style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600])),
                     TextButton(
                       onPressed: () {
                         Navigator.push(
