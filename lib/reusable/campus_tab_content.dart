@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../base/app_colors.dart';
 import '../base/app_constants.dart';
-import '../models/post.dart';
 import '../providers/user_provider.dart';
 import '../screens/profile_screen.dart';
 import 'post_card.dart';
+import '../providers/post_provider.dart';
 
 /// Placeholder bodies per tab; swap for real feature screens later.
 Widget campusTabContent(BuildContext context, int index, {Key? key}) {
@@ -107,53 +107,21 @@ class _ProfileTabState extends State<_ProfileTab> {
 class _HomeFeed extends StatelessWidget {
   const _HomeFeed({super.key});
 
-  static final List<Post> _mockPosts = [
-    Post(
-      id: '1',
-      authorName: 'Lorraine Tlou',
-      authorRole: 'CS Student',
-      authorAvatarUrl: 'https://i.pravatar.cc/150?u=lorraine',
-      content:
-          'Just finished the final project for Mobile Dev! Campus Connect is looking great. 🚀',
-      timestamp: DateTime.now().subtract(const Duration(minutes: 15)),
-      likes: 24,
-      comments: 5,
-    ),
-    Post(
-      id: '2',
-      authorName: 'John Doe',
-      authorRole: 'Applied Science',
-      authorAvatarUrl: 'https://i.pravatar.cc/150?u=john',
-      content:
-          'Anyone wanting to form a study group for the Physics exam? Meet at the library at 4 PM.',
-      timestamp: DateTime.now().subtract(const Duration(hours: 2)),
-      likes: 12,
-      comments: 8,
-    ),
-    Post(
-      id: '3',
-      authorName: 'Sarah Smith',
-      authorRole: 'Engineering',
-      authorAvatarUrl: 'https://i.pravatar.cc/150?u=sarah',
-      content:
-          'The new cafeteria menu is actually pretty good today! Highly recommend the pasta.',
-      timestamp: DateTime.now().subtract(const Duration(hours: 5)),
-      likes: 45,
-      comments: 12,
-      imageUrl:
-          'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format',
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      key: const ValueKey('home-feed'),
-      padding: AppSpacing.screenInsets.copyWith(top: 16, bottom: 80),
-      itemCount: _mockPosts.length,
-      separatorBuilder: (context, index) => const SizedBox(height: 16),
-      itemBuilder: (context, index) {
-        return PostCard(post: _mockPosts[index]);
+    return Consumer<PostProvider>(
+      builder: (context, provider, _) {
+        final posts = provider.posts;
+        if (posts.isEmpty) {
+          return const Center(child: Text('No posts yet. Be the first!'));
+        }
+        return ListView.separated(
+          key: const ValueKey('home-feed'),
+          padding: AppSpacing.screenInsets.copyWith(top: 16, bottom: 80),
+          itemCount: posts.length,
+          separatorBuilder: (_, _) => const SizedBox(height: 16),
+          itemBuilder: (_, i) => PostCard(post: posts[i]),
+        );
       },
     );
   }
