@@ -1,3 +1,6 @@
+// lib/models/post.dart
+import 'comment.dart';
+
 class Post {
   final String id;
   final String authorName;
@@ -5,53 +8,34 @@ class Post {
   final String authorAvatarUrl;
   final String content;
   final DateTime timestamp;
-  final int likes;
-  final int comments;
+  int likes;
+  bool isLikedByMe;
+  List<Comment> commentList; // renamed from 'comments' (was int)
   final String? imageUrl;
 
-  const Post({
+  Post({
     required this.id,
     required this.authorName,
-    required this.authorRole,
-    required this.authorAvatarUrl,
+    this.authorRole = '',
+    this.authorAvatarUrl = '',
     required this.content,
     required this.timestamp,
     this.likes = 0,
-    this.comments = 0,
+    this.isLikedByMe = false,
+    List<Comment>? commentList,
     this.imageUrl,
-  });
+  }) : commentList = commentList ?? [];
 
-  static final List<Post> mockPosts = [
-    Post(
-      id: '1',
-      authorName: 'Lorraine Tlou',
-      authorRole: 'CS Student',
-      authorAvatarUrl: 'https://i.pravatar.cc/150?u=lorraine',
-      content: 'Just finished the final project for Mobile Dev! Campus Connect is looking great. 🚀',
-      timestamp: DateTime.now().subtract(const Duration(minutes: 15)),
-      likes: 24,
-      comments: 5,
-    ),
-    Post(
-      id: '2',
-      authorName: 'John Doe',
-      authorRole: 'Applied Science',
-      authorAvatarUrl: 'https://i.pravatar.cc/150?u=john',
-      content: 'Anyone wanting to form a study group for the Physics exam? Meet at the library at 4 PM.',
-      timestamp: DateTime.now().subtract(const Duration(hours: 2)),
-      likes: 12,
-      comments: 8,
-    ),
-    Post(
-      id: '3',
-      authorName: 'Sarah Smith',
-      authorRole: 'Engineering',
-      authorAvatarUrl: 'https://i.pravatar.cc/150?u=sarah',
-      content: 'The new cafeteria menu is actually pretty good today! Highly recommend the pasta.',
-      timestamp: DateTime.now().subtract(const Duration(hours: 5)),
-      likes: 45,
-      comments: 12,
-      imageUrl: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format',
-    ),
-  ];
+  // Convenience getter so PostCard can show a count without breaking old code
+  int get commentCount => commentList.length;
+
+  // Derive initials from authorName for Team 4-style avatars
+  String get avatarInitials => authorName.trim().isEmpty
+      ? '?'
+      : authorName
+            .trim()
+            .split(' ')
+            .map((e) => e[0].toUpperCase())
+            .take(2)
+            .join();
 }
