@@ -36,6 +36,15 @@ class _CampusMainShellState extends State<CampusMainShell> {
     ),
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    // Ensure user data is loaded as soon as the shell is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<UserProvider>().loadUser();
+    });
+  }
+
   void _showCreatePost() {
     Navigator.push(
       context,

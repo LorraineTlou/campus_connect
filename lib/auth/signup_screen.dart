@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
 import '../base/app_colors.dart';
 import '../base/app_constants.dart';
 import '../models/user_model.dart';
+import '../providers/theme_provider.dart';
 import '../reusable/cc_buttons.dart';
 import '../reusable/cc_text_fields.dart';
 import '../utils/validators.dart';
@@ -194,15 +196,27 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.primary),
+          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : AppColors.primary),
           onPressed: () => Navigator.pop(context),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+              color: isDark ? Colors.white70 : Colors.grey[600],
+            ),
+            onPressed: () => context.read<ThemeProvider>().toggleTheme(),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -216,7 +230,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   'Create Account',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: AppColors.primary,
+                    color: isDark ? Colors.white : AppColors.primary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -224,7 +238,9 @@ class _SignupScreenState extends State<SignupScreen> {
                 Text(
                   'Join your campus community',
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: isDark ? Colors.white70 : Colors.grey[600],
+                  ),
                 ),
                 const SizedBox(height: 48),
 
@@ -283,11 +299,12 @@ class _SignupScreenState extends State<SignupScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Already have an account? "),
+                    Text(
+                      "Already have an account? ",
+                      style: TextStyle(color: isDark ? Colors.white70 : Colors.black87),
+                    ),
                     TextButton(
-                      onPressed: () => Navigator.pop(
-                        context,
-                      ), // Pops back to the Login screen
+                      onPressed: () => Navigator.pop(context),
                       child: const Text(
                         'Sign In',
                         style: TextStyle(

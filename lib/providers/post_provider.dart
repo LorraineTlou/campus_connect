@@ -4,7 +4,35 @@ import '../models/post.dart';
 import '../models/comment.dart';
 
 class PostProvider extends ChangeNotifier {
-  final List<Post> _posts = [];
+  final List<Post> _posts = [
+    Post(
+      id: 'p1',
+      authorName: 'Dr. Sarah Smith',
+      authorRole: 'Faculty of Engineering',
+      authorAvatarUrl: '',
+      content: 'Welcome back to campus, students! Remember that the library is now open 24/7 during the exam period. Good luck with your studies!',
+      timestamp: DateTime.now().subtract(const Duration(hours: 2)),
+      likes: 24,
+    ),
+    Post(
+      id: 'p2',
+      authorName: 'Alex Johnson',
+      authorRole: 'Computer Science, Year 3',
+      authorAvatarUrl: '',
+      content: 'Does anyone have the notes for the mobile app development lecture from yesterday? I missed it due to a doctor\'s appointment.',
+      timestamp: DateTime.now().subtract(const Duration(hours: 5)),
+      likes: 5,
+    ),
+    Post(
+      id: 'p3',
+      authorName: 'NUST Sports Club',
+      authorRole: 'Official Organization',
+      authorAvatarUrl: '',
+      content: 'Soccer tryouts are happening this Friday at 4 PM on the main field. All skill levels are welcome! ⚽️',
+      timestamp: DateTime.now().subtract(const Duration(days: 1)),
+      likes: 42,
+    ),
+  ];
 
   List<Post> get posts => List.unmodifiable(_posts);
 

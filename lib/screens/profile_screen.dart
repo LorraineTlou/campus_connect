@@ -47,9 +47,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   // ── Colours (match your global theme) ────────────────────────────────────
   static const Color _primary = Color(0xFF1976D2);
   static const Color _accent = Color(0xFF42A5F5);
-  static const Color _surface = Color(0xFFF5F7FA);
-  static const Color _textDark = Color(0xFF1A1A2E);
-  static const Color _textLight = Color(0xFF6B7280);
+  // Remove static colors, will use theme instead
 
   @override
   void initState() {
@@ -102,8 +100,11 @@ class _ProfileScreenState extends State<ProfileScreen>
   // ── Build ─────────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final surfaceColor = Theme.of(context).scaffoldBackgroundColor;
+
     return Scaffold(
-      backgroundColor: _surface,
+      backgroundColor: surfaceColor,
       body: NestedScrollView(
         headerSliverBuilder: (context, _) => [
           _buildAppBar(),
@@ -131,20 +132,23 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   SliverAppBar _buildAppBar() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final iconColor = isDark ? Colors.white : const Color(0xFF1A1A2E);
+
     return SliverAppBar(
       pinned: true,
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
       elevation: 0,
       leading: widget.isOwner
           ? null
           : IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new, color: _textDark),
+              icon: Icon(Icons.arrow_back_ios_new, color: iconColor),
               onPressed: () => Navigator.pop(context),
             ),
       actions: [
         if (widget.isOwner)
           IconButton(
-            icon: const Icon(Icons.settings_outlined, color: _textDark),
+            icon: Icon(Icons.settings_outlined, color: iconColor),
             onPressed: () {
               // TODO: navigate to Settings screen
             },
@@ -154,8 +158,12 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   Widget _buildProfileHeader() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : const Color(0xFF1A1A2E);
+    final textLight = isDark ? Colors.white70 : const Color(0xFF6B7280);
+
     return Container(
-      color: Colors.white,
+      color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -182,10 +190,10 @@ class _ProfileScreenState extends State<ProfileScreen>
           // Name + username
           Text(
             _user.name,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
-              color: _textDark,
+              color: textColor,
             ),
           ),
           Text(
@@ -196,11 +204,11 @@ class _ProfileScreenState extends State<ProfileScreen>
             const SizedBox(height: 4),
             Row(
               children: [
-                const Icon(Icons.school_outlined, size: 14, color: _textLight),
+                Icon(Icons.school_outlined, size: 14, color: textLight),
                 const SizedBox(width: 4),
                 Text(
                   '${_user.faculty} • Year ${_user.year}',
-                  style: const TextStyle(fontSize: 13, color: _textLight),
+                  style: TextStyle(fontSize: 13, color: textLight),
                 ),
               ],
             ),
@@ -210,9 +218,9 @@ class _ProfileScreenState extends State<ProfileScreen>
             const SizedBox(height: 8),
             Text(
               _user.bio,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
-                color: _textDark,
+                color: textColor,
                 height: 1.4,
               ),
               maxLines: 3,
@@ -350,7 +358,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         TabBar(
           controller: _tabController,
           labelColor: _primary,
-          unselectedLabelColor: _textLight,
+          unselectedLabelColor: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : const Color(0xFF6B7280),
           indicatorColor: _primary,
           tabs: const [
             Tab(icon: Icon(Icons.grid_on_outlined), text: 'Posts'),
@@ -378,7 +386,11 @@ class _TabDelegate extends SliverPersistentHeaderDelegate {
     double shrinkOffset,
     bool overlapsContent,
   ) {
-    return Container(color: Colors.white, child: tabBar);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+      child: tabBar,
+    );
   }
 
   @override

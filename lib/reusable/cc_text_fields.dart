@@ -88,7 +88,11 @@ class CCTextField extends StatelessWidget {
       textCapitalization: textCapitalization,
       validator: validator,
       obscureText: obscureText,
-      style: AppTextStyles.bodyMd.copyWith(color: AppColors.textPrimary),
+      style: AppTextStyles.bodyMd.copyWith(
+        color: Theme.of(context).brightness == Brightness.dark
+            ? Colors.white
+            : AppColors.textPrimary,
+      ),
       cursorColor: AppColors.primary,
       decoration: InputDecoration(
         labelText: label,
@@ -216,7 +220,11 @@ class CCSearchBar extends StatelessWidget {
         textInputAction: TextInputAction.search,
         onChanged: onChanged,
         onSubmitted: onSubmitted,
-        style: AppTextStyles.bodyMd.copyWith(color: AppColors.textPrimary),
+        style: AppTextStyles.bodyMd.copyWith(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white
+              : AppColors.textPrimary,
+        ),
         cursorColor: AppColors.primary,
         decoration: InputDecoration(
           hintText: hint,
@@ -276,7 +284,11 @@ class CCDropdownField<T> extends StatelessWidget {
       initialValue: value,
       items: items,
       onChanged: onChanged,
-      style: AppTextStyles.bodyMd.copyWith(color: AppColors.textPrimary),
+      style: AppTextStyles.bodyMd.copyWith(
+        color: Theme.of(context).brightness == Brightness.dark
+            ? Colors.white
+            : AppColors.textPrimary,
+      ),
       dropdownColor: AppColors.surfaceHigher,
       icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.textHint),
       decoration: InputDecoration(

@@ -47,6 +47,39 @@ class UserProvider extends ChangeNotifier {
         .update(updated.toMap());
   }
 
+  Future<void> toggleConnection(String targetUid) async {
+    if (_user == null) return;
+
+    final updatedFollowing = List<String>.from(_user!.followingIds);
+    if (updatedFollowing.contains(targetUid)) {
+      updatedFollowing.remove(targetUid);
+    } else {
+      updatedFollowing.add(targetUid);
+    }
+
+    _user = _user!.copyWith(followingIds: updatedFollowing);
+    notifyListeners();
+
+    // Update Firestore
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(_user!.uid)
+        .update({'followingIds': updatedFollowing});
+
+    // Also update the other user's follower list (simplified)
+    final targetDoc = await FirebaseFirestore.instance.collection('users').doc(targetUid).get();
+    if (targetDoc.exists) {
+      final targetData = targetDoc.data()!;
+      final followers = List<String>.from(targetData['followerIds'] ?? []);
+      if (followers.contains(_user!.uid)) {
+        followers.remove(_user!.uid);
+      } else {
+        followers.add(_user!.uid);
+      }
+      await FirebaseFirestore.instance.collection('users').doc(targetUid).update({'followerIds': followers});
+    }
+  }
+
   void clear() {
     _user = null;
     notifyListeners();

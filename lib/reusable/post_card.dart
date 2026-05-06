@@ -1,10 +1,12 @@
 // lib/widgets/post_card.dart
 
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/post.dart';
 import '../providers/post_provider.dart';
+import '../providers/user_provider.dart';
 import '../models/comment.dart';
 
 class PostCard extends StatelessWidget {
@@ -26,6 +28,10 @@ class PostCard extends StatelessWidget {
     final textColor = isDark ? Colors.white : const Color(0xFF263238);
     final subtitleColor = isDark ? const Color(0xFF90A4AE) : const Color(0xFF90A4AE);
     final dividerColor = isDark ? const Color(0xFF333333) : const Color(0xFFF0F4F8);
+
+    final currentUser = context.watch<UserProvider>().user;
+    final isMe = currentUser?.name == post.authorName; // Simple check for demo purposes
+    final isFollowing = currentUser?.followingIds.contains(post.id) ?? false; // Simplified logic
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
@@ -61,6 +67,26 @@ class PostCard extends StatelessWidget {
                     ],
                   ),
                 ),
+                if (!isMe)
+                  TextButton(
+                    onPressed: () {
+                      // Logic to follow user (placeholder target UID)
+                      context.read<UserProvider>().toggleConnection(post.id);
+                    },
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: Text(
+                      isFollowing ? 'Following' : 'Follow',
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF1565C0),
+                      ),
+                    ),
+                  ),
                 IconButton(
                   icon: Icon(Icons.more_horiz, color: subtitleColor, size: 20),
                   onPressed: () {},
@@ -83,8 +109,10 @@ class PostCard extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: post.imagePath != null && post.imagePath!.isNotEmpty
-                    ? Image.file(File(post.imagePath!), width: double.infinity, height: 220, fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(height: 120, color: Colors.grey[300], child: const Center(child: Icon(Icons.broken_image, size: 40))))
+                    ? (kIsWeb
+                        ? Image.network(post.imagePath!, width: double.infinity, height: 220, fit: BoxFit.cover)
+                        : Image.file(File(post.imagePath!), width: double.infinity, height: 220, fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Container(height: 120, color: Colors.grey[300], child: const Center(child: Icon(Icons.broken_image, size: 40)))))
                     : Image.network(post.imageUrl!, width: double.infinity, height: 220, fit: BoxFit.cover,
                         errorBuilder: (_, __, ___) => Container(height: 120, color: Colors.grey[300], child: const Center(child: Icon(Icons.broken_image, size: 40)))),
               ),
@@ -102,6 +130,8 @@ class PostCard extends StatelessWidget {
                 const SizedBox(width: 4),
                 _CommentButton(post: post),
                 const SizedBox(width: 4),
+                _ReshareButton(post: post),
+                const SizedBox(width: 4),
                 _ShareButton(post: post),
                 const Spacer(),
                 if (post.likes > 0)
@@ -116,6 +146,39 @@ class PostCard extends StatelessWidget {
           // ── Comments Section
           if (post.commentList.isNotEmpty) _CommentsSection(post: post),
         ],
+      ),
+    );
+  }
+}
+
+// ─── Reshare Button ───────────────────────────────────────────────────────────
+
+class _ReshareButton extends StatelessWidget {
+  final Post post;
+  const _ReshareButton({required this.post});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Post reshared to your profile!'),
+            backgroundColor: Color(0xFF43A047),
+          ),
+        );
+      },
+      borderRadius: BorderRadius.circular(8),
+      child: const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.repeat_rounded, size: 20, color: Color(0xFF90A4AE)),
+            SizedBox(width: 5),
+            Text('Reshare', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF90A4AE))),
+          ],
+        ),
       ),
     );
   }
